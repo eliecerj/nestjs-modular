@@ -1,10 +1,12 @@
 import { Module, HttpModule, HttpService } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config'
+import * as Joi from 'joi'
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config'
 import { environments } from './environment';
 import config from './config';
 
@@ -14,7 +16,12 @@ import config from './config';
       ConfigModule.forRoot({
         envFilePath: environments[process.env.NODE_ENV] || '.env',
         load: [config],
-        isGlobal: true
+        isGlobal: true,
+        validationSchema: Joi.object({
+          API_KEY: Joi.number().required(),
+          DATABASE_NAME: Joi.string().required(),
+          DATABASE_PORT: Joi.number().required(),
+        })
       }),
       HttpModule,
       UsersModule, 
